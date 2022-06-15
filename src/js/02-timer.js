@@ -1,5 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import Notiflix from 'notiflix';
 
 const refs = {
   dataInput: document.querySelector('#datetime-picker'),
@@ -10,10 +11,14 @@ const refs = {
   seconds: document.querySelector('span[data-seconds]'),
 };
 
+// consts
+
 let dateDifference = null;
 let timerCounter = null;
 refs.startBtn.disabled = true;
 DATA_DELAY = 1000;
+
+// options for flatpickr
 
 const options = {
   enableTime: true,
@@ -26,8 +31,9 @@ const options = {
     dateDifference = selectedDates[0] - currentDate;
 
     if (selectedDates[0] < currentDate) {
-      window.alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future');
     } else {
+      Notiflix.Notify.success('Great! Press "start" to start :)');
       refs.startBtn.disabled = false;
     }
   },
@@ -35,24 +41,30 @@ const options = {
 
 flatpickr(refs.dataInput, options);
 
+// timercounter click
+
 refs.startBtn.addEventListener('click', timerCount);
 
 function timerCount() {
   timerCounter = setInterval(() => {
     let dateDifferenceConverted = convertMs(dateDifference);
-    dateDifference -= 1000;
+    dateDifference = dateDifference - 1000;
+    refs.dataInput.disabled = true;
 
     dateTimerTextContent(dateDifferenceConverted);
+    refs.startBtn.disabled = true;
 
     console.log(dateDifferenceConverted);
   }, DATA_DELAY);
 }
 
+// convert units
+
 function dateTimerTextContent({ days, hours, minutes, seconds }) {
-  refs.days.textContect = addLeadingZero(days);
-  refs.hours.textContect = addLeadingZero(hours);
-  refs.minutes.textContect = addLeadingZero(minutes);
-  refs.seconds.textContect = addLeadingZero(seconds);
+  refs.days.textContent = addLeadingZero(days);
+  refs.hours.textContent = addLeadingZero(hours);
+  refs.minutes.textContent = addLeadingZero(minutes);
+  refs.seconds.textContent = addLeadingZero(seconds);
 }
 
 function convertMs(ms) {
@@ -77,3 +89,15 @@ function convertMs(ms) {
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
+
+// style
+document.querySelector('.timer').style.display = 'flex';
+document.querySelector('button').style.marginBottom = '30px';
+document.querySelectorAll('.field').forEach(el => (el.style.fontSize = '30px'));
+document
+  .querySelectorAll('.field')
+  .forEach(el => (el.style.marginRight = '15px'));
+document.querySelectorAll('.field').forEach(el => (el.style.fontSize = '20px'));
+document;
+
+document.querySelectorAll('.label').forEach(el => (el.style.color = '#52A4FF'));
